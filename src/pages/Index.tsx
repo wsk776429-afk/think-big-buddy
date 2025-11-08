@@ -4,7 +4,7 @@ import { ResultsList } from "@/components/ResultsList";
 import { ChatBot } from "@/components/ChatBot";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe } from "lucide-react";
+import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe, Monitor, Target, Layers } from "lucide-react";
 
 export interface SearchResult {
   title: string;
@@ -75,6 +75,26 @@ const Index = () => {
       icon: BookOpen,
       title: "Curated Resources",
       description: "Access handpicked learning materials from top platforms"
+    },
+    {
+      icon: Code2,
+      title: "Code Snippets",
+      description: "View syntax-highlighted code examples with copy functionality"
+    },
+    {
+      icon: MessageSquare,
+      title: "Interactive Chat",
+      description: "Have conversations with AI to deepen your understanding"
+    },
+    {
+      icon: Globe,
+      title: "Multi-Language",
+      description: "Search and learn in multiple programming languages"
+    },
+    {
+      icon: Youtube,
+      title: "Video Learning",
+      description: "Direct access to video tutorials from top educators"
     }
   ];
 
@@ -155,12 +175,32 @@ const Index = () => {
       {results.length === 0 && (
         <div className="container mx-auto px-4 pb-20 max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in">
-            {features.map((feature, index) => (
+            {features.slice(0, 4).map((feature, index) => (
               <Card 
                 key={index}
                 className="p-6 hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur-sm border-2"
               >
                 <div className="rounded-full w-12 h-12 bg-gradient-primary flex items-center justify-center mb-4">
+                  <feature.icon className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2 text-foreground">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {feature.description}
+                </p>
+              </Card>
+            ))}
+          </div>
+
+          {/* Second row - 4 cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in">
+            {features.slice(4, 8).map((feature, index) => (
+              <Card 
+                key={index + 4}
+                className="p-6 hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur-sm border-2"
+              >
+                <div className="rounded-full w-12 h-12 bg-gradient-accent flex items-center justify-center mb-4">
                   <feature.icon className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2 text-foreground">
