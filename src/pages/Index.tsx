@@ -2,6 +2,8 @@ import { useState } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ResultsList } from "@/components/ResultsList";
 import { ChatBot } from "@/components/ChatBot";
+import { YouTubeTutorFinder } from "@/components/YouTubeTutorFinder";
+import { VoiceAvatar } from "@/components/VoiceAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe, Monitor, Target, Layers } from "lucide-react";
@@ -16,6 +18,11 @@ const Index = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [showChat, setShowChat] = useState(false);
+
+  const handleVoiceSearch = (text: string) => {
+    setQuery(text);
+    handleSearch(text);
+  };
 
   const handleSearch = (searchQuery: string) => {
     setQuery(searchQuery);
@@ -157,12 +164,20 @@ const Index = () => {
         </div>
       </div>
 
+      {/* YouTube Tutor Finder */}
+      <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
+        <YouTubeTutorFinder />
+      </div>
+
       {/* Chat Bot */}
       {showChat && (
         <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
           <ChatBot initialQuery={query} />
         </div>
       )}
+
+      {/* Voice Avatar - Floating Button */}
+      <VoiceAvatar onVoiceInput={handleVoiceSearch} />
 
       {/* Results */}
       {results.length > 0 && (

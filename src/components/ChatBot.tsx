@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Bot, User } from "lucide-react";
+import { Send, Bot, User, Volume2, VolumeX, Mic } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   role: "user" | "assistant";
@@ -22,7 +24,11 @@ export const ChatBot = ({ initialQuery }: ChatBotProps) => {
     },
   ]);
   const [input, setInput] = useState("");
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { speak, stop } = useSpeechSynthesis();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (initialQuery && messages.length === 1) {
@@ -56,6 +62,11 @@ export const ChatBot = ({ initialQuery }: ChatBotProps) => {
         content: responses[Math.floor(Math.random() * responses.length)],
       };
       setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Speak the response if voice is enabled
+      if (voiceEnabled) {
+        speak(assistantMessage.content);
+      }
     }, 1000);
   };
 
@@ -64,13 +75,77 @@ export const ChatBot = ({ initialQuery }: ChatBotProps) => {
     handleSend();
   };
 
+  const handleVoiceInput = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      toast({
+        title: "Voice not supported",
+        description: "Your browser doesn't support voice input",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast({
+        title: "Error",
+        description: "Could not recognize speech",
+        variant: "destructive",
+      });
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
+
+  const toggleVoice = () => {
+    if (voiceEnabled) {
+      stop();
+    }
+    setVoiceEnabled(!voiceEnabled);
+  };
+
   return (
     <Card className="shadow-medium overflow-hidden">
       <div className="bg-gradient-primary p-4 text-primary-foreground">
-        <h3 className="font-semibold flex items-center gap-2">
-          <Bot className="h-5 w-5" />
-          Learning Assistant
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold flex items-center gap-2">
+            <Bot className="h-5 w-5" />
+            Learning Assistant
+          </h3>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleVoice}
+            className="text-primary-foreground hover:bg-primary-foreground/20"
+          >
+            {voiceEnabled ? (
+              <Volume2 className="h-4 w-4" />
+            ) : (
+              <VolumeX className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
       
       <ScrollArea className="h-80 p-4" ref={scrollRef}>
@@ -107,6 +182,15 @@ export const ChatBot = ({ initialQuery }: ChatBotProps) => {
       </ScrollArea>
 
       <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
+        <Button
+          type="button"
+          size="icon"
+          variant="outline"
+          onClick={handleVoiceInput}
+          className={isListening ? "bg-red-500 text-white animate-pulse" : ""}
+        >
+          <Mic className="h-4 w-4" />
+        </Button>
         <Input
           type="text"
           placeholder="Ask me anything..."
