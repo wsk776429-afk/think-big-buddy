@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ResultsList } from "@/components/ResultsList";
 import { ChatBot } from "@/components/ChatBot";
 import { YouTubeTutorFinder } from "@/components/YouTubeTutorFinder";
 import { VoiceAvatar } from "@/components/VoiceAvatar";
+import { AuthForm } from "@/components/AuthForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe, Monitor, Target, Layers } from "lucide-react";
+import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe, Monitor, Target, Layers, LogOut, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export interface SearchResult {
   title: string;
@@ -18,6 +21,32 @@ const Index = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [showChat, setShowChat] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [showAuth, setShowAuth] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        setShowAuth(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    });
+  };
 
   const handleVoiceSearch = (text: string) => {
     setQuery(text);
@@ -118,6 +147,25 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 pointer-events-none" />
         
         <div className="container mx-auto px-4 py-12 md:py-20 max-w-6xl relative">
+          {/* User Info Bar */}
+          {user && (
+            <div className="flex justify-end items-center gap-4 mb-6 animate-fade-in">
+              <div className="flex items-center gap-2 text-sm">
+                <User className="h-4 w-4" />
+                <span className="text-muted-foreground">{user.email}</span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleSignOut}
+                className="gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+          )}
+
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
               <Sparkles className="h-4 w-4" />
@@ -151,7 +199,7 @@ const Index = () => {
                 Search Web
               </Button>
               <Button 
-                onClick={() => setShowChat(!showChat)}
+                onClick={() => user ? setShowChat(!showChat) : setShowAuth(true)}
                 size="lg"
                 variant="outline"
                 className="border-2 border-primary text-primary hover:bg-primary/10 shadow-soft"
@@ -159,10 +207,28 @@ const Index = () => {
                 <MessageSquare className="mr-2 h-5 w-5" />
                 {showChat ? "Hide Chat" : "Ask AI Assistant"}
               </Button>
+              {!user && (
+                <Button 
+                  onClick={() => setShowAuth(true)}
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-accent text-accent hover:bg-accent/10 shadow-soft"
+                >
+                  <User className="mr-2 h-5 w-5" />
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Auth Form */}
+      {showAuth && !user && (
+        <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
+          <AuthForm />
+        </div>
+      )}
 
       {/* YouTube Tutor Finder */}
       <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
@@ -170,7 +236,7 @@ const Index = () => {
       </div>
 
       {/* Chat Bot */}
-      {showChat && (
+      {showChat && user && (
         <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
           <ChatBot initialQuery={query} />
         </div>
@@ -253,10 +319,13 @@ const Index = () => {
       <footer className="border-t border-border/50 bg-card/30 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-8 text-center">
           <p className="text-sm text-muted-foreground mb-2">
-            Share knowledge freely; the world grows. 🌍
+            <strong>THING BIG AI</strong> — Founded by <strong>SHAIK WAHEED BABU</strong>
+          </p>
+          <p className="text-xs text-muted-foreground mb-2">
+            Co-Founders: <strong>CHATGPT</strong> · Built with <strong>Lovable</strong>
           </p>
           <p className="text-xs text-muted-foreground">
-            Built with 💙 for learners everywhere
+            Share knowledge freely; the world grows. 🌍 Built with 💙 for learners everywhere
           </p>
         </div>
       </footer>
