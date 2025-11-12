@@ -5,6 +5,31 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Lock, User } from "lucide-react";
+import { z } from "zod";
+
+const signUpSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name must be less than 100 characters"),
+  email: z.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must be less than 128 characters"),
+});
+
+const signInSchema = z.object({
+  email: z.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters"),
+  password: z.string()
+    .min(6, "Password must be at least 6 characters")
+    .max(128, "Password must be less than 128 characters"),
+});
 
 export const AuthForm = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -19,12 +44,29 @@ export const AuthForm = () => {
     setLoading(true);
 
     try {
+      // Validate input
+      const validationResult = isSignUp
+        ? signUpSchema.safeParse({ name, email, password })
+        : signInSchema.safeParse({ email, password });
+
+      if (!validationResult.success) {
+        const firstError = validationResult.error.errors[0];
+        toast({
+          title: "Validation Error",
+          description: firstError.message,
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       if (isSignUp) {
+        const signUpData = validationResult.data as z.infer<typeof signUpSchema>;
         const { error } = await supabase.auth.signUp({
-          email,
-          password,
+          email: signUpData.email,
+          password: signUpData.password,
           options: {
-            data: { name },
+            data: { name: signUpData.name },
             emailRedirectTo: `${window.location.origin}/`,
           },
         });
@@ -35,10 +77,13 @@ export const AuthForm = () => {
           title: "Success!",
           description: "Your account has been created. You can now sign in.",
         });
+        
+        // Switch to sign in mode after successful signup
+        setIsSignUp(false);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: validationResult.data.email,
+          password: validationResult.data.password,
         });
         
         if (error) throw error;
