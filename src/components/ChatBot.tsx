@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 
 interface Message {
   role: "user" | "assistant";
@@ -16,6 +17,10 @@ interface Message {
 interface ChatBotProps {
   initialQuery?: string;
 }
+
+// Validation schemas
+const chatInputSchema = z.string().trim().min(1, "Message cannot be empty").max(2000, "Message too long (max 2000 characters)");
+const urlSchema = z.string().url("Invalid URL format").max(500, "URL too long (max 500 characters)");
 
 export const ChatBot = ({ initialQuery }: ChatBotProps) => {
   const [messages, setMessages] = useState<Message[]>([
@@ -128,6 +133,20 @@ export const ChatBot = ({ initialQuery }: ChatBotProps) => {
     const messageToSend = message || input;
     if (!messageToSend.trim() || isLoading) return;
 
+    // Validate input length
+    try {
+      chatInputSchema.parse(messageToSend);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Invalid Input",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     const userMessage: Message = { role: "user", content: messageToSend };
     setMessages((prev) => [...prev, userMessage]);
     await saveChatMessage('user', messageToSend);
@@ -142,6 +161,22 @@ export const ChatBot = ({ initialQuery }: ChatBotProps) => {
       
       if (urlMatch) {
         const url = urlMatch[0];
+        
+        // Validate URL
+        try {
+          urlSchema.parse(url);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            toast({
+              title: "Invalid URL",
+              description: error.errors[0].message,
+              variant: "destructive",
+            });
+            setIsLoading(false);
+            return;
+          }
+        }
+        
         toast({
           title: "Fetching webpage...",
           description: "Please wait while I read the content.",
@@ -154,9 +189,9 @@ export const ChatBot = ({ initialQuery }: ChatBotProps) => {
 
         if (error) throw error;
 
-        if (data && data.content) {
+        if (data && data.html) {
           // Clean HTML and extract text
-          const cleaned = data.content
+          const cleaned = data.html
             .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
             .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
             .replace(/<[^>]+>/g, " ")
