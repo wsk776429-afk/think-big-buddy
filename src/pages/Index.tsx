@@ -8,6 +8,7 @@ import { AuthForm } from "@/components/AuthForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe, LogOut, User, ArrowRight } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -101,20 +102,23 @@ const Index = () => {
             </span>
           </div>
           
-          {user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground hidden sm:block">{user.email}</span>
-              <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2 text-muted-foreground hover:text-foreground">
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Sign Out</span>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground hidden sm:block">{user.email}</span>
+                <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2 text-muted-foreground hover:text-foreground">
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </Button>
+              </>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => setShowAuth(true)} className="gap-2">
+                <User className="h-4 w-4" />
+                Sign In
               </Button>
-            </div>
-          ) : (
-            <Button variant="ghost" size="sm" onClick={() => setShowAuth(true)} className="gap-2">
-              <User className="h-4 w-4" />
-              Sign In
-            </Button>
-          )}
+            )}
+          </div>
         </div>
       </nav>
 
