@@ -7,7 +7,7 @@ import { VoiceAvatar } from "@/components/VoiceAvatar";
 import { AuthForm } from "@/components/AuthForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe, Monitor, Target, Layers, LogOut, User } from "lucide-react";
+import { MessageSquare, Search, Sparkles, Zap, BookOpen, Code2, Youtube, Globe, LogOut, User, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -42,10 +42,7 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    toast({
-      title: "Signed out",
-      description: "You have been signed out successfully.",
-    });
+    toast({ title: "Signed out", description: "You have been signed out successfully." });
   };
 
   const handleVoiceSearch = (text: string) => {
@@ -55,83 +52,27 @@ const Index = () => {
 
   const handleSearch = (searchQuery: string) => {
     setQuery(searchQuery);
-    
-    // Open web search in new tab
     window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
     
-    // Populate demo results with helpful learning resources
     const demoResults: SearchResult[] = [
-      {
-        title: "YouTube: Video Tutorials",
-        snippet: "Find video tutorials and explanations",
-        link: `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`
-      },
-      {
-        title: "GeeksforGeeks",
-        snippet: "Code examples and detailed explanations",
-        link: `https://www.geeksforgeeks.org/?s=${encodeURIComponent(searchQuery)}`
-      },
-      {
-        title: "Stack Overflow: Q&A",
-        snippet: "Related questions and community answers",
-        link: `https://stackoverflow.com/search?q=${encodeURIComponent(searchQuery)}`
-      },
-      {
-        title: "MDN Web Docs",
-        snippet: "Comprehensive web development documentation",
-        link: `https://developer.mozilla.org/en-US/search?q=${encodeURIComponent(searchQuery)}`
-      },
-      {
-        title: "W3Schools",
-        snippet: "Tutorials and references for web development",
-        link: `https://www.w3schools.com/search/search_asp.asp?search=${encodeURIComponent(searchQuery)}`
-      }
+      { title: "YouTube: Video Tutorials", snippet: "Find video tutorials and explanations", link: `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}` },
+      { title: "GeeksforGeeks", snippet: "Code examples and detailed explanations", link: `https://www.geeksforgeeks.org/?s=${encodeURIComponent(searchQuery)}` },
+      { title: "Stack Overflow: Q&A", snippet: "Related questions and community answers", link: `https://stackoverflow.com/search?q=${encodeURIComponent(searchQuery)}` },
+      { title: "MDN Web Docs", snippet: "Comprehensive web development documentation", link: `https://developer.mozilla.org/en-US/search?q=${encodeURIComponent(searchQuery)}` },
+      { title: "W3Schools", snippet: "Tutorials and references for web development", link: `https://www.w3schools.com/search/search_asp.asp?search=${encodeURIComponent(searchQuery)}` },
     ];
-    
     setResults(demoResults);
   };
 
   const features = [
-    {
-      icon: Sparkles,
-      title: "AI-Powered Learning",
-      description: "Get instant answers and explanations from our intelligent chatbot"
-    },
-    {
-      icon: Search,
-      title: "Smart Search",
-      description: "Find the best tutorials and documentation across the web"
-    },
-    {
-      icon: Zap,
-      title: "Voice Input",
-      description: "Speak your queries naturally with voice recognition"
-    },
-    {
-      icon: BookOpen,
-      title: "Curated Resources",
-      description: "Access handpicked learning materials from top platforms"
-    },
-    {
-      icon: Code2,
-      title: "Code Snippets",
-      description: "View syntax-highlighted code examples with copy functionality"
-    },
-    {
-      icon: MessageSquare,
-      title: "Interactive Chat",
-      description: "Have conversations with AI to deepen your understanding"
-    },
-    {
-      icon: Globe,
-      title: "Multi-Language",
-      description: "Search and learn in multiple programming languages"
-    },
-    {
-      icon: Youtube,
-      title: "Video Learning",
-      description: "Direct access to video tutorials from top educators"
-    }
+    { icon: Sparkles, title: "AI-Powered Learning", description: "Instant answers and explanations from our intelligent chatbot", gradient: true },
+    { icon: Search, title: "Smart Search", description: "Find the best tutorials and documentation across the web", gradient: true },
+    { icon: Zap, title: "Voice Input", description: "Speak your queries naturally with voice recognition", gradient: false },
+    { icon: BookOpen, title: "Curated Resources", description: "Handpicked learning materials from top platforms", gradient: false },
+    { icon: Code2, title: "Code Snippets", description: "Syntax-highlighted code examples with copy functionality", gradient: true },
+    { icon: MessageSquare, title: "Interactive Chat", description: "Conversations with AI to deepen your understanding", gradient: true },
+    { icon: Globe, title: "Multi-Language", description: "Search and learn in multiple programming languages", gradient: false },
+    { icon: Youtube, title: "Video Learning", description: "Direct access to video tutorials from top educators", gradient: false },
   ];
 
   const quickActions = [
@@ -141,191 +82,188 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 pointer-events-none" />
-        
-        <div className="container mx-auto px-4 py-12 md:py-20 max-w-6xl relative">
-          {/* User Info Bar */}
-          {user && (
-            <div className="flex justify-end items-center gap-4 mb-6 animate-fade-in">
-              <div className="flex items-center gap-2 text-sm">
-                <User className="h-4 w-4" />
-                <span className="text-muted-foreground">{user.email}</span>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleSignOut}
-                className="gap-2"
-              >
+    <div className="min-h-screen bg-background">
+      {/* Ambient background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-accent/5 blur-[120px]" />
+      </div>
+
+      {/* Nav */}
+      <nav className="relative z-10 border-b border-border/50 glass">
+        <div className="container mx-auto px-4 py-3 max-w-6xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
+              <Sparkles className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="font-bold text-lg tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              thing big
+            </span>
+          </div>
+          
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground hidden sm:block">{user.email}</span>
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2 text-muted-foreground hover:text-foreground">
                 <LogOut className="h-4 w-4" />
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => setShowAuth(true)} className="gap-2">
+              <User className="h-4 w-4" />
+              Sign In
+            </Button>
           )}
+        </div>
+      </nav>
 
-          <div className="text-center mb-12 animate-fade-in">
-            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              <Sparkles className="h-4 w-4" />
-              <span>Your AI Learning Companion</span>
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold mb-4">
-              <span className="bg-gradient-primary bg-clip-text text-transparent">thing big</span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-2">
-              Learn programming smarter, not harder
-            </p>
-            <p className="text-sm md:text-base text-muted-foreground italic">
-              "Learn small, think big. Code with curiosity."
-            </p>
+      {/* Hero */}
+      <section className="relative z-10 pt-16 pb-12 md:pt-24 md:pb-16">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full glass text-sm font-medium text-muted-foreground animate-fade-in">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            Your AI Learning Companion
           </div>
+          
+          <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight animate-fade-in" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            <span className="text-gradient">think big</span>
+          </h1>
+          
+          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-2 animate-fade-in">
+            Learn programming smarter, not harder.
+          </p>
+          <p className="text-sm text-muted-foreground/70 italic mb-10 animate-fade-in">
+            "Learn small, think big. Code with curiosity."
+          </p>
 
-          {/* Search Section */}
-          <div className="max-w-3xl mx-auto mb-12 animate-slide-up">
+          {/* Search */}
+          <div className="max-w-2xl mx-auto mb-8 animate-slide-up">
             <SearchBar onSearch={handleSearch} />
             
             <div className="flex flex-wrap gap-3 mt-6 justify-center">
-              <Button 
+              <Button
                 onClick={() => query && handleSearch(query)}
                 size="lg"
-                className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-soft"
+                className="bg-gradient-primary hover:opacity-90 transition-all shadow-soft glow gap-2"
                 disabled={!query}
               >
-                <Search className="mr-2 h-5 w-5" />
+                <Search className="h-4 w-4" />
                 Search Web
               </Button>
-              <Button 
+              <Button
                 onClick={() => user ? setShowChat(!showChat) : setShowAuth(true)}
                 size="lg"
                 variant="outline"
-                className="border-2 border-primary text-primary hover:bg-primary/10 shadow-soft"
+                className="border-primary/30 hover:border-primary hover:bg-primary/5 transition-all gap-2"
               >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                {showChat ? "Hide Chat" : "Ask AI Assistant"}
+                <MessageSquare className="h-4 w-4" />
+                {showChat ? "Hide Chat" : "Ask AI"}
               </Button>
-              {!user && (
-                <Button 
-                  onClick={() => setShowAuth(true)}
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-accent text-accent hover:bg-accent/10 shadow-soft"
-                >
-                  <User className="mr-2 h-5 w-5" />
-                  Sign In
-                </Button>
-              )}
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Auth Form */}
+      {/* Auth */}
       {showAuth && !user && (
-        <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
+        <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up relative z-10">
           <AuthForm />
         </div>
       )}
 
       {/* YouTube Tutor Finder */}
-      <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
+      <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up relative z-10">
         <YouTubeTutorFinder />
       </div>
 
-      {/* Chat Bot */}
+      {/* Chat */}
       {showChat && user && (
-        <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
+        <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up relative z-10">
           <ChatBot initialQuery={query} />
         </div>
       )}
 
-      {/* Voice Avatar - Floating Button */}
+      {/* Voice */}
       <VoiceAvatar onVoiceInput={handleVoiceSearch} />
 
       {/* Results */}
       {results.length > 0 && (
-        <div className="container mx-auto px-4 mb-12 max-w-4xl animate-slide-up">
+        <div className="container mx-auto px-4 mb-16 max-w-4xl animate-slide-up relative z-10">
           <ResultsList results={results} />
         </div>
       )}
 
-      {/* Features Grid - Only show when no results */}
+      {/* Features */}
       {results.length === 0 && (
-        <div className="container mx-auto px-4 pb-20 max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in">
-            {features.slice(0, 4).map((feature, index) => (
-              <Card 
-                key={index}
-                className="p-6 hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur-sm border-2"
-              >
-                <div className="rounded-full w-12 h-12 bg-gradient-primary flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2 text-foreground">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {feature.description}
-                </p>
-              </Card>
-            ))}
-          </div>
+        <section className="relative z-10 pb-20">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Everything you need to <span className="text-gradient">learn faster</span>
+              </h2>
+              <p className="text-muted-foreground max-w-lg mx-auto">
+                Powerful tools designed to accelerate your programming journey.
+              </p>
+            </div>
 
-          {/* Second row - 4 cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in">
-            {features.slice(4, 8).map((feature, index) => (
-              <Card 
-                key={index + 4}
-                className="p-6 hover:shadow-medium transition-all duration-300 hover:-translate-y-1 bg-card/50 backdrop-blur-sm border-2"
-              >
-                <div className="rounded-full w-12 h-12 bg-gradient-accent flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2 text-foreground">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {feature.description}
-                </p>
-              </Card>
-            ))}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="text-center animate-fade-in">
-            <h2 className="text-2xl font-bold mb-6 text-foreground">Quick Access</h2>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {quickActions.map((action, index) => (
-                <Button
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+              {features.map((feature, index) => (
+                <Card
                   key={index}
-                  variant="outline"
-                  size="lg"
-                  onClick={() => window.open(action.url, '_blank')}
-                  className="hover:border-primary hover:text-primary hover:bg-primary/5 transition-all"
+                  className="group p-6 glass hover:shadow-medium transition-all duration-300 hover:-translate-y-1 cursor-default"
                 >
-                  <action.icon className="mr-2 h-5 w-5" />
-                  {action.label}
-                </Button>
+                  <div className={`rounded-xl w-11 h-11 flex items-center justify-center mb-4 ${
+                    feature.gradient ? 'bg-gradient-primary' : 'bg-gradient-accent'
+                  }`}>
+                    <feature.icon className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <h3 className="font-semibold text-base mb-1.5 text-foreground group-hover:text-primary transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </Card>
               ))}
             </div>
+
+            {/* Quick Actions */}
+            <div className="text-center">
+              <h3 className="text-xl font-semibold mb-6" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Quick Access
+              </h3>
+              <div className="flex flex-wrap gap-3 justify-center">
+                {quickActions.map((action, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="lg"
+                    onClick={() => window.open(action.url, '_blank')}
+                    className="glass border-border/50 hover:border-primary/50 hover:text-primary transition-all gap-2 group"
+                  >
+                    <action.icon className="h-4 w-4" />
+                    {action.label}
+                    <ArrowRight className="h-3 w-3 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  </Button>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* Footer */}
-      <footer className="border-t border-border/50 bg-card/30 backdrop-blur-sm">
+      <footer className="relative z-10 border-t border-border/50 glass">
         <div className="container mx-auto px-4 py-8 text-center">
-          <p className="text-sm text-muted-foreground mb-2">
-            <strong>THING BIG AI</strong> — Founded by <strong>SHAIK WAHEED BABU</strong>
+          <p className="text-sm text-muted-foreground mb-1">
+            <strong className="text-foreground">THING BIG AI</strong> — Founded by <strong>SHAIK WAHEED BABU</strong>
           </p>
-          <p className="text-xs text-muted-foreground mb-2">
+          <p className="text-xs text-muted-foreground/70 mb-1">
             Co-Founders: <strong>CHATGPT</strong> · Built with <strong>Lovable</strong>
           </p>
-          <p className="text-xs text-muted-foreground">
-            Share knowledge freely; the world grows. 🌍 Built with 💙 for learners everywhere
+          <p className="text-xs text-muted-foreground/60">
+            Share knowledge freely; the world grows. 🌍
           </p>
         </div>
       </footer>
